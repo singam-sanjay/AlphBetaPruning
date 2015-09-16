@@ -6,11 +6,12 @@ using namespace std;
 #define plyr_1 ('\0')
 #define plyr_2 ('\1')
 #define none   ('\2')
-#define invld  ('\8')
+#define invld  ('\3')
 
 class HVAL
 {
 	int val; // Replace this with actual heuristic
+			 // h = sum(plyr_1,y) - sum(plyr_2,7-y)
 
 public:
 	HVAL(int val)

@@ -13,13 +13,42 @@ void HVAL::update( unsigned char xold,unsigned char yold,unsigned char xnew,unsi
  * Instead of computing the heuristic each time, we just calculate the value by looking at the move made
  */
 {
-	if( !(xold<=xnew && yold<=ynew) )
+	switch( board[xold][yold].player )
 	{
-		cerr << __func__ << " :" << '(' << xold << ',' << ynew << ")->(" << xnew << ',' << ynew << ") is not possible.\n";
-		exit(11);
+		case plyr_1:{
+			if( !(xold<=xnew && yold<ynew) )
+			{		
+				cerr << __func__ << " :" << '(' << xold << ',' << ynew << ")->(" << xnew << ',' << ynew << ") is not possible for plyr_1.\n";
+				exit(11);
+			}
+			if( board[xnew][ynew].player == plyr_2 )
+			{
+				val -= -( 7-ynew ); /* REMOVING the (-ve) EFFECT OF one of the PLYR_2'S PAWNS ON the HEURISTIC */
+			}
+			val += 1; // Since one pawn has moved "forward"
+			break;
+		}
+		case plyr_2:{
+			if( !(xold>=xnew && yold>ynew) )
+			{		
+				cerr << __func__ << " :" << '(' << xold << ',' << ynew << ")->(" << xnew << ',' << ynew << ") is not possible for plyr_2.\n";
+				exit(11);
+			}
+			if( board[xnew][ynew].player == plyr_1 )
+			{
+				val -= ( ynew-0 ); /* REMOVING the (+ve) EFFECT OF one of the PLYR_2'S PAWNS ON the HEURISTIC */
+			}
+			val += -1; // Since onw pawn has moved "backward"
+			break;
+		}
+		case invld:{
+			cerr << __func__ << ": got invld @ " << xold << ',' << yold << ".\n";break;
+		}
+		case none:{
+			cerr << __func__ << ": got none @ " << xold << ',' << yold << ".\n";break;
+		}
 	}
 
-	val += ( ynew-yold ); /* THIS IS delta(HEURISTIC) */
 }
 
 bool MOVE::operator<(MOVE other_move)
