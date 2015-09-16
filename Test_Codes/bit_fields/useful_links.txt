@@ -1,0 +1,4 @@
+http://www.serc.iisc.ernet.in/facilities/ComputingFacilities/systems/cluster/vac-7.0/html/language/ref/clrc03defbitf.htm
+http://www.cs.cf.ac.uk/Dave/C/node13.html#SECTION001320000000000000000
+http://en.cppreference.com/w/cpp/language/bit_field
+
