@@ -1,3 +1,6 @@
+#include<bits/stdc++.h>
+using namespace std;
+
 /* Header file for class definitions */
 
 class HVAL
@@ -40,7 +43,8 @@ class GAME
 	static int const MAX_LVL = 10;
 	static int max_lvl, curr_lvl=0;
 
-	list<move> moves;
+	list<MOVE> moves;
+	HVAL hval;
 
 public:
 
@@ -52,4 +56,4 @@ public:
 	void find_moves();
 	void find_hval_of_moves();
 	void sort_moves();
-}
+};

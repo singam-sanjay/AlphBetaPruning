@@ -4,7 +4,7 @@
 
 bool HVAL::operator<(HVAL other_hval)
 {
-	return hval < other_hval.val;
+	return val < other_hval.val;
 }
 
 void HVAL::update( unsigned char xold,unsigned char yold,unsigned char xnew,unsigned char ynew )
@@ -14,9 +14,15 @@ void HVAL::update( unsigned char xold,unsigned char yold,unsigned char xnew,unsi
 {
 	if( !(xold<=xnew && yold<=ynew) )
 	{
-		cerr << '(' << xold << ',' << ynew << ")->(" << xnew << ',' << ynew ") is not possible.\n";
+		cerr << '(' << xold << ',' << ynew << ")->(" << xnew << ',' << ynew << ") is not possible.\n";
 		exit(11);
 	}
 
 	val += ( ynew-yold ); /* THIS IS delta(HEURISTIC) */
 }
+
+bool MOVE::operator<(MOVE other_move)
+{
+	return (hval < other_move.hval);
+}
+
