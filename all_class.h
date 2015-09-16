@@ -6,6 +6,7 @@ using namespace std;
 #define plyr_1 ('\0')
 #define plyr_2 ('\1')
 #define none   ('\2')
+#define invld  ('\8')
 
 class HVAL
 {
@@ -27,6 +28,7 @@ struct MOVE
 	unsigned char xnew : 4;
 	unsigned char ynew : 4;
 	HVAL hval;
+	MOVE() : hval(0) {}
 	bool operator<(MOVE move);
 };
 
@@ -50,6 +52,7 @@ class GAME
 {
 	list<MOVE> moves;
 	HVAL hval;
+	unsigned char plyr, oppo;
 
 public:
 
