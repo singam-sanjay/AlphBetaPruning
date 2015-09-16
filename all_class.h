@@ -3,13 +3,18 @@ using namespace std;
 
 /* Header file for class definitions */
 
+#define plyr_1 ('\0')
+#define plyr_2 ('\1')
+#define none   ('\2')
+
 class HVAL
 {
 	int val; // Replace this with actual heuristic
-	public:
+
+public:
 	HVAL(int val)
 	{
-		this->val = val;
+		(this->val) = val;
 	}
 	bool operator<(HVAL hval);
 	void update( unsigned char xold,unsigned char yold,unsigned char xnew,unsigned char ynew );
@@ -36,22 +41,22 @@ struct BOARD_elem
 	unsigned char player : 2;// 0,1 or 2
 };
 
+BOARD_elem board[8][8];
+POS_elem	  pos_of[2][8];
+int const MAX_LVL = 10;
+int max_lvl, curr_lvl;
+
 class GAME
 {
-	static BOARD_elem board[8][8];
-	static POS_elem	  pos_of[2][8];
-	static int const MAX_LVL = 10;
-	static int max_lvl, curr_lvl=0;
-
 	list<MOVE> moves;
 	HVAL hval;
 
 public:
 
-	GAME(int board[2][8], int max_turns); /*Game starts here*/ 
-	GAME(MOVE move);					  /*Spawn a new game where the configuration differs by 'move'*/
-	GAME(MOVE move, int parnt_hval );	  /*Spawn a new game where the configuration differs by 'move',
-											knowing that the parent has minimax value of 'parent_hval'*/
+	GAME(POS_elem pos[2][8], int max_turns); /*Game starts here*/ 
+	GAME(MOVE move);						/*Spawn a new game where the configuration differs by 'move'*/
+	GAME(MOVE move, int parnt_hval );		/*Spawn a new game where the configuration differs by 'move',
+											  knowing that the parent has minimax value of 'parent_hval'*/
 
 	void find_moves();
 	void find_hval_of_moves();
