@@ -83,7 +83,7 @@ void GAME::find_moves()
 {
 	unsigned char iter1,iter2;
 	plyr = ( curr_lvl%2 ? plyr_1 : plyr_2 ); oppo = ( curr_lvl%2 ? plyr_2 : plyr_1 );
-	MOVE move; 
+	MOVE move(hval); 
 	
 	for(iter1=0 ; iter1<8 ; iter1)
 	{

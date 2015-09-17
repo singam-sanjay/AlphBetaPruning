@@ -29,7 +29,7 @@ struct MOVE
 	unsigned char xnew : 4;
 	unsigned char ynew : 4;
 	HVAL hval;
-	MOVE() : hval(0) {}
+	MOVE(HVAL h_val) : hval(h_val) {}
 	bool operator<(MOVE move);
 };
 
