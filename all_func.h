@@ -21,6 +21,11 @@ void HVAL::update( unsigned char xold,unsigned char yold,unsigned char xnew,unsi
 				cerr << __func__ << " :" << '(' << xold << ',' << ynew << ")->(" << xnew << ',' << ynew << ") is not possible for plyr_1.\n";
 				exit(11);
 			}
+			if( ynew == 7 )
+			{
+				val = HVAL::MAX_WIN;
+				break;
+			}
 			if( board[xnew][ynew].player == plyr_2 )
 			{
 				val -= -( 7-ynew ); /* REMOVING the (-ve) EFFECT OF one of the PLYR_2'S PAWNS ON the HEURISTIC */
@@ -33,6 +38,11 @@ void HVAL::update( unsigned char xold,unsigned char yold,unsigned char xnew,unsi
 			{		
 				cerr << __func__ << " :" << '(' << xold << ',' << ynew << ")->(" << xnew << ',' << ynew << ") is not possible for plyr_2.\n";
 				exit(11);
+			}
+			if( ynew==0 )
+			{
+				val = HVAL::MIN_WIN;
+				break;
 			}
 			if( board[xnew][ynew].player == plyr_1 )
 			{

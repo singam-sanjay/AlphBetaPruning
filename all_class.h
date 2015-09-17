@@ -14,6 +14,7 @@ class HVAL
 			 // h = sum(plyr_1,y) - sum(plyr_2,7-y)
 
 public:
+	static const int MAX_WIN = INT_MAX, MIN_WIN = INT_MIN;
 	HVAL(int val)
 	{
 		(this->val) = val;
