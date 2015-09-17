@@ -51,9 +51,6 @@ void HVAL::update( unsigned char xold,unsigned char yold,unsigned char xnew,unsi
 			val += -1; // Since onw pawn has moved "backward"
 			break;
 		}
-		case invld:{
-			cerr << __func__ << ": got invld @ " << xold << ',' << yold << ".\n";break;
-		}
 		case none:{
 			cerr << __func__ << ": got none @ " << xold << ',' << yold << ".\n";break;
 		}
@@ -118,14 +115,60 @@ GAME::GAME(POS_elem pos[2][8], int max_turns, MOVE* ret_move) : hval(0)
 
 GAME::GAME( MOVE move, HVAL* ret_hval )
 {
+	register unsigned char iter1;
+	//Save the old context, pieces in 'prev_cntxt', position already in 'move'
+	MOVE_PIECE_elem prev_cntxt( board[move.xold][move.yold].player,board[move.xnew][move.ynew].player );
+
+	/*updates for the current level*/
 	++curr_lvl;
+	plyr = ( curr_lvl%2 ?  plyr_1 : plyr_2 ); // ODD(curr_lvl) => expr evals to true => plyr_1 or EVEN(curr_lvl) => expr eval to false => plyr_2
+	oppo = ( curr_lvl%2 ?  plyr_2 : plyr_1 ); // 'oppo; should be the other guy, that's why the options are reversed
+	/*Updating pos_of */
+	{//need to change the position of plyr's piece in pos_of
+		for( iter1=0 ; iter1<8 ; ++iter1)
+		{
+			if( (pos_of[plyr][iter1].x==move.xold) && (pos_of[plyr][iter1].y==move.yold) )
+			{
+				pos_of[plyr][iter1].x = move.xnew;
+				pos_of[plyr][iter1].y = move.ynew;
+				break;
+			}
+		}
+		if( iter1==8 )
+		{
+			cerr << __func__ << ": Wasn't able to find the current player 'plyr_" << (char)('1'+plyr) << "'s piece in pos_of at level " << curr_lvl << '.' << endl;
+			exit(11);
+		}
+	}
+	if( board[move.xnew][move.ynew].player==oppo )
+	{//need to invalidate the 'oppo' piece in pos_of
+		for( iter1=0 ; iter1<8 ; ++iter1 )
+		{
+			if( (pos_of[oppo][iter1].x==move.xnew) && (pos_of[oppo][iter1].y==move.ynew) )
+			{
+				pos_of[oppo][iter1].x = invld;
+				pos_of[oppo][iter1].y = invld;
+				break;
+			}
+		}
+		if( iter1==8 )
+		{
+			cerr << __func__ << ": Wasn't able to find the opponent 'plyr_" << (char)('1'+oppo) << "'s piece in pos_of at level " << curr_lvl << '.' << endl;
+			exit(11);
+		}
+	}
+	board[move.xold][move.yold].player = none; // moved plyr out of this
+	board[move.xnew][move.ynew].player = plyr; // moved plyr into new position
+	hval = move.hval; // hval for this move already computed while selecting moves in the previous 'GAME'
+
+
 	return;
 }
 
 
 void GAME::find_moves()
 {
-	unsigned char iter1,iter2;
+	unsigned char iter1;
 	MOVE move(hval); 
 	
 	switch( plyr )

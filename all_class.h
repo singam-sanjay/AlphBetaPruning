@@ -3,10 +3,10 @@ using namespace std;
 
 /* Header file for class definitions */
 
-#define plyr_1 ('\0')
+#define plyr_1 ('\0') 
 #define plyr_2 ('\1')
-#define none   ('\2')
-#define invld  ('\3')
+#define none   ('\2') // This is a state of a square in the board
+#define invld  ('\010') // This is a position of a piece in the board, i.e. NOWHERE , octal 10 == decimal 8
 
 class HVAL
 {
@@ -41,6 +41,17 @@ struct POS_elem
 {
 	unsigned char x : 4;
 	unsigned char y : 4;
+};
+
+struct MOVE_PIECE_elem
+{
+	unsigned char old_pos_pice : 4;
+	unsigned char new_pos_pice : 4;
+	MOVE_PIECE_elem(unsigned char old_p,unsigned char new_p)
+	{
+		old_pos_pice = old_p;
+		new_pos_pice = new_p;
+	}
 };
 
 struct BOARD_elem
