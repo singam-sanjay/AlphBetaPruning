@@ -58,6 +58,15 @@ void HVAL::update( unsigned char xold,unsigned char yold,unsigned char xnew,unsi
 
 }
 
+unsigned char HVAL::won()
+{
+	switch( val )
+	{
+		case HVAL::MAX_WIN:return plyr_1;
+		case HVAL::MIN_WIN:return plyr_2;
+		default:		   return none;
+	}
+}
 bool MOVE::operator<(MOVE other_move)
 {
 	return (hval < other_move.hval);
@@ -95,9 +104,20 @@ GAME::GAME(POS_elem pos[2][8], int max_turns, MOVE* ret_best_move) : hval(0)
 	
 	// since the largest will be behind, move = moves.back()
 	best_move = MOVE(moves.back());
+	if( best_move.hval.won()==plyr_1 )
+	{
+		*(ret_best_move) = best_move;
+		return;
+	}
 	GAME(best_move,&ret_hval);
 	hval = ret_hval;
 	moves.pop_back();
+
+	if( hval.won()==plyr_1 )
+	{
+		*(ret_best_move) = best_move;
+		return;
+	}
 
 	while( moves.size()!=0 )
 	{
@@ -106,6 +126,11 @@ GAME::GAME(POS_elem pos[2][8], int max_turns, MOVE* ret_best_move) : hval(0)
 		{
 			hval = ret_hval;
 			best_move = MOVE(moves.back()); // Remembering the best move till now
+			if( hval.won()==plyr_1 )
+			{	
+				*(ret_best_move) = best_move;
+				return;
+			}
 		}
 		moves.pop_back();
 	}
@@ -177,12 +202,20 @@ GAME::GAME( MOVE move, HVAL* ret_best_hval )
 		GAME(MOVE(moves.back()),&ret_hval);
 		hval = ret_hval;
 		moves.pop_back();
+		if( hval.won()==plyr_1 )
+		{
+			goto wrap_up_1;
+		}
 		while( moves.size()!=0 )
 		{
 			GAME(MOVE(moves.back()),hval,&ret_hval);
 			if( hval<ret_hval )
 			{
 				hval = ret_hval;
+				if( hval.won()==plyr_1 )
+				{
+					goto wrap_up_1;
+				}
 			}
 			moves.pop_back();
 		}
@@ -192,12 +225,20 @@ GAME::GAME( MOVE move, HVAL* ret_best_hval )
 		GAME(MOVE(moves.front()),&ret_hval);
 		hval = ret_hval;
 		moves.pop_front();
+		if( hval.won()==plyr_2 )
+		{
+			goto wrap_up_1;
+		}
 		while( moves.size()!=0 )
 		{
 			GAME(MOVE(moves.front()),hval,&ret_hval);
 			if( ret_hval<hval )
 			{
 				hval = ret_hval;
+				if( hval.won()==plyr_2 )
+				{
+					goto wrap_up_1;
+				}
 			}
 			moves.pop_front();
 		}
