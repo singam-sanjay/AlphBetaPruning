@@ -169,3 +169,8 @@ void GAME::find_hval_of_moves()
 		moves.push_front(move);
 	}
 }
+
+void GAME::sort_moves()
+{
+	moves.sort();
+}
