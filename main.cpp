@@ -60,7 +60,7 @@ void get_user_ip()
 		cout << "ynew:";cin >> ynew;if( !(ynew<0 && 7<ynew && ynew<yold) )goto invalid_coord;
 		for( iter1=0 ; iter1<8 ; ++iter1 )
 		{
-			if( pos[oppo][iter1].x==move.xold && pos_of[oppo][iter1].y==move.yold )break;
+			if( pos[oppo][iter1].x==move.xold && pos[oppo][iter1].y==move.yold )break;
 		}
 		if( iter1==8 )
 		{
@@ -69,7 +69,7 @@ void get_user_ip()
 		}
 		for( iter1=0 ; iter1<8 ; ++iter1)
 		{
-			if( pos[oppo][iter1].x==move.xnew && pos_of[oppo][iter1].y==move.ynew )break;
+			if( pos[oppo][iter1].x==move.xnew && pos[oppo][iter1].y==move.ynew )break;
 		}
 		if( iter1!=8 )
 		{
