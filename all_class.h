@@ -72,9 +72,9 @@ class GAME
 
 public:
 
-	GAME(POS_elem pos[2][8], int max_turns, MOVE* ret_move); /*Game starts here*/ 
-	GAME(MOVE move, HVAL* ret_hval);						/*Spawn a new game where the configuration differs by 'move'*/
-	GAME(MOVE move, int parnt_hval, HVAL* ret_hval );		/*Spawn a new game where the configuration differs by 'move',
+	GAME(POS_elem pos[2][8], int max_turns, MOVE* ret_best_move); /*Game starts here*/ 
+	GAME( MOVE move, HVAL* ret_best_hval );						/*Spawn a new game where the configuration differs by 'move'*/
+	GAME(MOVE move, HVAL parnt_hval, HVAL* ret_hval );		/*Spawn a new game where the configuration differs by 'move',
 											  knowing that the parent has minimax value of 'parent_hval'*/
 
 	void find_moves();

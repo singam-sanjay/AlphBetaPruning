@@ -63,7 +63,7 @@ bool MOVE::operator<(MOVE other_move)
 	return (hval < other_move.hval);
 }
 
-GAME::GAME(POS_elem pos[2][8], int max_turns, MOVE* ret_move) : hval(0)
+GAME::GAME(POS_elem pos[2][8], int max_turns, MOVE* ret_best_move) : hval(0)
 {
 	memcpy( pos_of, pos, sizeof(POS_elem)*2*8 );
 	max_lvl = 2*max_turns;
@@ -102,7 +102,7 @@ GAME::GAME(POS_elem pos[2][8], int max_turns, MOVE* ret_move) : hval(0)
 	while( moves.size()!=0 )
 	{
 		GAME(MOVE(moves.back()),&ret_hval);
-		if( hval<ret_hval ) // Since playr_1 is MAX
+		if( hval<ret_hval ) // Since the first player (playr_1) is MAX
 		{
 			hval = ret_hval;
 			best_move = MOVE(moves.back()); // Remembering the best move till now
@@ -110,10 +110,10 @@ GAME::GAME(POS_elem pos[2][8], int max_turns, MOVE* ret_move) : hval(0)
 		moves.pop_back();
 	}
 
-	*ret_move = best_move;
+	*(ret_best_move) = best_move;
 }
 
-GAME::GAME( MOVE move, HVAL* ret_hval )
+GAME::GAME( MOVE move, HVAL* ret_best_hval )
 {
 	register unsigned char iter1;
 	//Save the old context, pieces in 'prev_cntxt', position already in 'move'
@@ -122,7 +122,7 @@ GAME::GAME( MOVE move, HVAL* ret_hval )
 	/*updates for the current level*/
 	++curr_lvl;
 	plyr = ( curr_lvl%2 ?  plyr_1 : plyr_2 ); // ODD(curr_lvl) => expr evals to true => plyr_1 or EVEN(curr_lvl) => expr eval to false => plyr_2
-	oppo = ( curr_lvl%2 ?  plyr_2 : plyr_1 ); // 'oppo; should be the other guy, that's why the options are reversed
+	oppo = ( curr_lvl%2 ?  plyr_2 : plyr_1 ); // 'oppo' should be the other guy, that's why the options are reversed
 	/*Updating pos_of */
 	{//need to change the position of plyr's piece in pos_of
 		for( iter1=0 ; iter1<8 ; ++iter1)
@@ -136,11 +136,11 @@ GAME::GAME( MOVE move, HVAL* ret_hval )
 		}
 		if( iter1==8 )
 		{
-			cerr << __func__ << ": Wasn't able to find the current player 'plyr_" << (char)('1'+plyr) << "'s piece in pos_of at level " << curr_lvl << '.' << endl;
+			cerr << __func__ << ':' << __LINE__ << ": Wasn't able to find the current player 'plyr_" << (char)('1'+plyr) << "'s piece in pos_of at level " << curr_lvl << '.' << endl;
 			exit(11);
 		}
 	}
-	if( board[move.xnew][move.ynew].player==oppo )
+	if( prev_cntxt.new_pos_pice==oppo )
 	{//need to invalidate the 'oppo' piece in pos_of
 		for( iter1=0 ; iter1<8 ; ++iter1 )
 		{
@@ -153,7 +153,7 @@ GAME::GAME( MOVE move, HVAL* ret_hval )
 		}
 		if( iter1==8 )
 		{
-			cerr << __func__ << ": Wasn't able to find the opponent 'plyr_" << (char)('1'+oppo) << "'s piece in pos_of at level " << curr_lvl << '.' << endl;
+			cerr << __func__ << ':' << __LINE__ << ": Wasn't able to find the opponent 'plyr_" << (char)('1'+oppo) << "'s piece in pos_of at level " << curr_lvl << '.' << endl;
 			exit(11);
 		}
 	}
@@ -161,11 +161,88 @@ GAME::GAME( MOVE move, HVAL* ret_hval )
 	board[move.xnew][move.ynew].player = plyr; // moved plyr into new position
 	hval = move.hval; // hval for this move already computed while selecting moves in the previous 'GAME'
 
-
-	return;
+	//Now it starts
+	find_moves();
+	find_hval_of_moves();
+	sort_moves();
+	
+	HVAL ret_hval;
+	if( plyr==plyr_1 )
+	{
+		GAME(MOVE(moves.back()),&ret_hval);
+		hval = ret_hval;
+		moves.pop_back();
+		while( moves.size()!=0 )
+		{
+			GAME(MOVE(moves.back()),hval,&ret_hval);
+			if( hval<ret_hval )
+			{
+				hval = ret_hval;
+			}
+			moves.pop_back();
+		}
+	}
+	else//plyr is plyr_2
+	{
+		GAME(MOVE(moves.front()),&ret_hval);
+		hval = ret_hval;
+		moves.pop_front();
+		while( moves.size()!=0 )
+		{
+			GAME(MOVE(moves.front()),hval,&ret_hval);
+			if( ret_hval<hval )
+			{
+				hval = ret_hval;
+			}
+			moves.pop_front();
+		}
+	}
+	
+	*(ret_best_hval) = hval;
+	
+	/* Restore previous state */
+	board[move.xnew][move.ynew].player = prev_cntxt.new_pos_pice;
+	board[move.xold][move.yold].player = prev_cntxt.old_pos_pice;//the player
+	if( prev_cntxt.new_pos_pice==oppo )
+	{//Need to validate the entry corresponding to board[move.xnew][move.ynew].player in pos_of
+		for( iter1=0 ; iter1<8 ; ++iter1)
+		{
+			if( (pos_of[oppo][iter1].x==invld) && (pos_of[oppo][iter1].y==invld) )
+			{
+				pos_of[oppo][iter1].x = move.xnew;
+				pos_of[oppo][iter1].y = move.ynew;
+				break;
+			}
+		}
+		if( iter1==8 )
+		{
+			cerr << __func__ << ':' << __LINE__ << ": Wasn't able to find the opponent's 'plyr_" << (char)('1'+plyr) << "'s piece in pos_of at level " << curr_lvl << '.' << endl;
+			exit(11);
+		}
+	}
+	{//need to revert the position of plyr's piece in pos_of
+		for( iter1=0 ; iter1<8 ; ++iter1)
+		{
+			if( (pos_of[plyr][iter1].x==move.xnew) && (pos_of[plyr][iter1].y==move.ynew) )
+			{
+				pos_of[plyr][iter1].x = move.xold;
+				pos_of[plyr][iter1].y = move.yold;
+				break;
+			}
+		}
+		if( iter1==8 )
+		{
+			cerr << __func__ << ':' << __LINE__ << ": Wasn't able to find the current player 'plyr_" << (char)('1'+plyr) << "'s piece in pos_of at level " << curr_lvl << '.' << endl;
+			exit(11);
+		}
+	}
+	--curr_lvl;
 }
 
-
+GAME::GAME(MOVE move, HVAL parnt_hval, HVAL* ret_hval )
+{
+	return;
+}
 void GAME::find_moves()
 {
 	unsigned char iter1;
