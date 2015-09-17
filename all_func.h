@@ -66,7 +66,7 @@ bool MOVE::operator<(MOVE other_move)
 	return (hval < other_move.hval);
 }
 
-GAME::GAME(POS_elem pos[2][8], int max_turns) : hval(0)
+GAME::GAME(POS_elem pos[2][8], int max_turns, MOVE* ret_move) : hval(0)
 {
 	memcpy( pos_of, pos, sizeof(POS_elem)*2*8 );
 	max_lvl = 2*max_turns;
@@ -87,7 +87,40 @@ GAME::GAME(POS_elem pos[2][8], int max_turns) : hval(0)
 		board[ pos[plyr_1][iter1].x ][ pos[0][iter1].y ].player = plyr_1;
 		board[ pos[plyr_2][iter1].x ][ pos[1][iter1].y ].player = plyr_2;
 	}
+	
+	find_moves();
+	find_hval_of_moves();
+	sort_moves();
+
+	HVAL ret_hval;
+	MOVE best_move;
+	
+	// since the largest will be behind, move = moves.back()
+	best_move = MOVE(moves.back());
+	GAME(best_move,&ret_hval);
+	hval = ret_hval;
+	moves.pop_back();
+
+	while( moves.size()!=0 )
+	{
+		GAME(MOVE(moves.back()),&ret_hval);
+		if( hval<ret_hval ) // Since playr_1 is MAX
+		{
+			hval = ret_hval;
+			best_move = MOVE(moves.back()); // Remembering the best move till now
+		}
+		moves.pop_back();
+	}
+
+	*ret_move = best_move;
 }
+
+GAME::GAME( MOVE move, HVAL* ret_hval )
+{
+	++curr_lvl;
+	return;
+}
+
 
 void GAME::find_moves()
 {
@@ -164,7 +197,7 @@ void GAME::find_hval_of_moves()
 	N = moves.size();
 	while(N--)
 	{
-		move = moves.back();moves.pop_back();
+		move = MOVE(moves.back());moves.pop_back();
 		move.update();
 		moves.push_front(move);
 	}
