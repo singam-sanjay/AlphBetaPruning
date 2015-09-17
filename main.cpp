@@ -87,7 +87,7 @@ invalid_coord:cout << "Invalid coordinates\n";
 }
 bool move_on_board()
 {
-	cout << '[' << xold << ',' << yold << "]->[" << xnew << ',' << ynew << "]\n";
+	cout << '[' << move.xold << ',' << move.yold << "]->[" << move.xnew << ',' << move.ynew << "]\n";
 	if( move.ynew==7 || move.ynew==0 )
 	{
 		return true;// Someone just won
