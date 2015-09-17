@@ -85,27 +85,58 @@ void GAME::find_moves()
 	plyr = ( curr_lvl%2 ? plyr_1 : plyr_2 ); oppo = ( curr_lvl%2 ? plyr_2 : plyr_1 );
 	MOVE move(hval); 
 	
-	for(iter1=0 ; iter1<8 ; iter1)
+	switch( plyr )
 	{
-		if( pos_of[plyr][iter1].x == invld || pos_of[plyr][iter1].y == invld )continue;
+		case plyr_1:{
+			for(iter1=0 ; iter1<8 ; ++iter1)
+			{
+				if( pos_of[plyr][iter1].x == invld || pos_of[plyr][iter1].y == invld )continue;
 
-		move.xold = pos_of[plyr][iter1].x;
-		move.ynew = pos_of[plyr][iter1].y;
-		move.yold = pos_of[plyr][iter1].y;
-		if( 1 <= pos_of[plyr][iter1].x && board[ pos_of[plyr][iter1].x-1 ][ pos_of[plyr][iter1].y+1 ].player!=plyr )
-		{
-			move.xnew = pos_of[plyr][iter1].x-1;
-			moves.push_front(move);
+				move.xold = pos_of[plyr][iter1].x;
+				move.yold = pos_of[plyr][iter1].y;
+				move.ynew = pos_of[plyr][iter1].y+1;
+				if( 1 <= pos_of[plyr][iter1].x && board[ pos_of[plyr][iter1].x-1 ][ pos_of[plyr][iter1].y+1 ].player!=plyr )
+				{
+					move.xnew = pos_of[plyr][iter1].x-1;
+					moves.push_front(move);
+				}
+				if( board[ pos_of[plyr][iter1].x ][ pos_of[plyr][iter1].y+1 ].player!=plyr )
+				{
+					move.xnew = pos_of[plyr][iter1].x;
+					moves.push_front(move);
+				}
+				if( pos_of[plyr][iter1].x <= 6 && board[ pos_of[plyr][iter1].x+1 ][ pos_of[plyr][iter1].y+1 ].player!=plyr )
+				{
+					move.xnew = pos_of[plyr][iter1].x+1;
+					moves.push_front(move);
+				}
+			}break;
 		}
-		if( board[ pos_of[plyr][iter1].x ][ pos_of[plyr][iter1].y+1 ].player!=plyr )
-		{
-			move.xnew = pos_of[plyr][iter1].x;
-			moves.push_front(move);
-		}
-		if( pos_of[plyr][iter1].x <= 6 && board[ pos_of[plyr][iter1].x+1 ][ pos_of[plyr][iter1].y+1 ].player!=plyr )
-		{
-			move.xnew = pos_of[plyr][iter1].x+1;
-			moves.push_front(move);
-		}
+		case plyr_2:{
+			for( iter1=0 ; iter1<8 ; ++iter1)
+			{
+				if( pos_of[plyr][iter1].x == invld || pos_of[plyr][iter1].y == invld )continue;
+
+				move.xold = pos_of[plyr][iter1].x;
+				move.yold = pos_of[plyr][iter1].y;
+				move.ynew = pos_of[plyr][iter1].y-1;
+				if( 1 <= pos_of[plyr][iter1].x && board[ pos_of[plyr][iter1].x-1 ][ pos_of[plyr][iter1].y-1 ].player!=plyr )
+				{
+					move.xnew = pos_of[plyr][iter1].x-1;
+					moves.push_front(move);
+				}
+				if( board[ pos_of[plyr][iter1].x ][ pos_of[plyr][iter1].y-1 ].player!=plyr )
+				{
+					move.xnew = pos_of[plyr][iter1].x;
+					moves.push_front(move);
+				}
+				if( pos_of[plyr][iter1].x <= 6 && board[ pos_of[plyr][iter1].x+1 ][ pos_of[plyr][iter1].y-1 ].player!=plyr )
+				{
+					move.xnew = pos_of[plyr][iter1].x+1;
+					moves.push_front(move);
+				}
+			}
+		}break;
+		
 	}
 }
