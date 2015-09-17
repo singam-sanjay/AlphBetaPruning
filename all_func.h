@@ -88,6 +88,7 @@ GAME::GAME(POS_elem pos[2][8], int max_turns, MOVE* ret_move) : hval(0)
 		board[ pos[plyr_2][iter1].x ][ pos[1][iter1].y ].player = plyr_2;
 	}
 	
+	plyr = plyr_1 ; oppo = plyr_2;
 	find_moves();
 	find_hval_of_moves();
 	sort_moves();
@@ -125,7 +126,6 @@ GAME::GAME( MOVE move, HVAL* ret_hval )
 void GAME::find_moves()
 {
 	unsigned char iter1,iter2;
-	plyr = ( curr_lvl%2 ? plyr_1 : plyr_2 ); oppo = ( curr_lvl%2 ? plyr_2 : plyr_1 );
 	MOVE move(hval); 
 	
 	switch( plyr )
