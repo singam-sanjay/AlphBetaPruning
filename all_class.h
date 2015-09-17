@@ -31,6 +31,8 @@ struct MOVE
 	unsigned char ynew : 4;
 	HVAL hval;
 	MOVE(HVAL h_val) : hval(h_val) {}
+	MOVE() : hval(0) {}
+	void update();
 	bool operator<(MOVE move);
 };
 

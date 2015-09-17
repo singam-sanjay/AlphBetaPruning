@@ -150,3 +150,22 @@ void GAME::find_moves()
 		
 	}
 }
+
+void MOVE::update()
+{
+	hval.update(xold,yold,xnew,ynew);
+}
+
+void GAME::find_hval_of_moves()
+{
+	static int N;
+	static MOVE move;
+
+	N = moves.size();
+	while(N--)
+	{
+		move = moves.back();moves.pop_back();
+		move.update();
+		moves.push_front(move);
+	}
+}
