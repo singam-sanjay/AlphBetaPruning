@@ -77,7 +77,7 @@ GAME::GAME(POS_elem pos[2][8], int max_turns, MOVE* ret_best_move) : hval(0)
 	unsigned char iter1,iter2;
 	for( iter1=0 ; iter1<8 ; ++iter1 )
 	{
-		for( iter2=0 ; iter1<8 ; ++iter1 )board[iter1][iter2].player = none;
+		for( iter2=0 ; iter2<8 ; ++iter2 )board[iter1][iter2].player = none;
 	}
 	for( iter1=0 ; iter1<8 ; ++iter1 )
 	{
@@ -101,7 +101,7 @@ GAME::GAME(POS_elem pos[2][8], int max_turns, MOVE* ret_best_move) : hval(0)
 
 	while( moves.size()!=0 )
 	{
-		GAME(MOVE(moves.back()),&ret_hval);
+		GAME(MOVE(moves.back()),hval,&ret_hval);
 		if( hval<ret_hval ) // Since the first player (playr_1) is MAX
 		{
 			hval = ret_hval;
