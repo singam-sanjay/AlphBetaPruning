@@ -13,7 +13,7 @@ int main()
 {
 	init_board();
 
-	cout << "maximum #turns lookahed (max " << MAX_LVL/2 << ")" << endl;cin >> max_turns;
+	cout << "maximum #turns lookahed (max " << MAX_LVL/2 << ") :" ;cin >> max_turns;
 	
 	do
 	{
