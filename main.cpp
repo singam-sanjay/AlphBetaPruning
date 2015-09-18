@@ -14,7 +14,7 @@ int main()
 	init_board();
 
 	cout << "maximum #turns lookahed (max " << MAX_LVL/2 << ") :" ;cin >> max_turns;
-	
+
 	do
 	{
 		swap(plyr,oppo);
@@ -43,8 +43,8 @@ void init_board()
 	unsigned char iter1;
 	for( iter1=0 ; iter1<8 ; ++iter1 )
 	{
-		pos[plyr_1][iter1].x = 0;pos[plyr_1][iter1].y = iter1;
-		pos[plyr_2][iter1].x = 7;pos[plyr_2][iter1].y = iter1;
+		pos[plyr_1][iter1].y = 0;pos[plyr_1][iter1].x = iter1;
+		pos[plyr_2][iter1].y = 7;pos[plyr_2][iter1].x = iter1;
 	}
 }
 

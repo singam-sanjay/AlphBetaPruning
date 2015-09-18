@@ -82,7 +82,7 @@ GAME::GAME(POS_elem pos[2][8], int max_turns, MOVE* ret_best_move) : hval(0)
 		exit(11);
 	}
 	curr_lvl = 1;
-	
+
 	unsigned char iter1,iter2;
 	for( iter1=0 ; iter1<8 ; ++iter1 )
 	{
@@ -90,10 +90,16 @@ GAME::GAME(POS_elem pos[2][8], int max_turns, MOVE* ret_best_move) : hval(0)
 	}
 	for( iter1=0 ; iter1<8 ; ++iter1 )
 	{
-		board[ pos[plyr_1][iter1].x ][ pos[0][iter1].y ].player = plyr_1;
-		board[ pos[plyr_2][iter1].x ][ pos[1][iter1].y ].player = plyr_2;
+		if( pos[plyr_1][iter1].x!=invld && pos[plyr_1][iter1].y!=invld )
+		{
+			board[ pos[plyr_1][iter1].x ][ pos[plyr_1][iter1].y ].player = plyr_1;
+		}
+		if( pos[plyr_2][iter1].x!=invld && pos[plyr_2][iter1].y!=invld )
+		{
+			board[ pos[plyr_2][iter1].x ][ pos[plyr_2][iter1].y ].player = plyr_2;
+		}
 	}
-	
+
 	plyr = plyr_1 ; oppo = plyr_2;
 	find_moves();
 	find_hval_of_moves();
@@ -101,7 +107,7 @@ GAME::GAME(POS_elem pos[2][8], int max_turns, MOVE* ret_best_move) : hval(0)
 
 	HVAL ret_hval;
 	MOVE best_move;
-	
+
 	// since the largest will be behind, move = moves.back()
 	best_move = MOVE(moves.back());
 	if( best_move.hval.won()==plyr_1 )
@@ -127,7 +133,7 @@ GAME::GAME(POS_elem pos[2][8], int max_turns, MOVE* ret_best_move) : hval(0)
 			hval = ret_hval;
 			best_move = MOVE(moves.back()); // Remembering the best move till now
 			if( hval.won()==plyr_1 )
-			{	
+			{
 				*(ret_best_move) = best_move;
 				return;
 			}
