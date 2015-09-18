@@ -16,9 +16,9 @@ void HVAL::update( unsigned char xold,unsigned char yold,unsigned char xnew,unsi
 	switch( board[xold][yold].player )
 	{
 		case plyr_1:{
-			if( !(xold<=xnew && yold<ynew) )
+			if( yold>ynew )
 			{		
-				cerr << __func__ << " :" << '(' << xold << ',' << ynew << ")->(" << xnew << ',' << ynew << ") is not possible for plyr_1.\n";
+				cerr << __func__ << " :" << '(' << (int)xold << ',' << (int)yold << ")->(" << (int)xnew << ',' << (int)ynew << ") is not possible for plyr_1 @LVL " << curr_lvl << ".\n";
 				exit(11);
 			}
 			if( ynew == 7 )
@@ -34,9 +34,9 @@ void HVAL::update( unsigned char xold,unsigned char yold,unsigned char xnew,unsi
 			break;
 		}
 		case plyr_2:{
-			if( !(xold>=xnew && yold>ynew) )
+			if( yold<ynew )
 			{		
-				cerr << __func__ << " :" << '(' << xold << ',' << ynew << ")->(" << xnew << ',' << ynew << ") is not possible for plyr_2.\n";
+				cerr << __func__ << " :" << '(' << (int)xold << ',' << (int)yold << ")->(" << (int)xnew << ',' << (int)ynew << ") is not possible for plyr_2 @LVL " << curr_lvl << ".\n";
 				exit(11);
 			}
 			if( ynew==0 )
@@ -52,7 +52,7 @@ void HVAL::update( unsigned char xold,unsigned char yold,unsigned char xnew,unsi
 			break;
 		}
 		case none:{
-			cerr << __func__ << ": got none @ " << xold << ',' << yold << ".\n";break;
+			cerr << __func__ << ": got none @ " << (int)xold << ',' << (int)yold << " @LVL " << curr_lvl << " \n";exit(11);
 		}
 	}
 
@@ -146,52 +146,9 @@ GAME::GAME(POS_elem pos[2][8], int max_turns, MOVE* ret_best_move) : hval(0)
 
 GAME::GAME( MOVE move, HVAL* ret_best_hval )
 {
-	register unsigned char iter1;
 	HVAL ret_hval;
-	//Save the old context, pieces in 'prev_cntxt', position already in 'move'
-	MOVE_PIECE_elem prev_cntxt( board[move.xold][move.yold].player,board[move.xnew][move.ynew].player );
 
-	/*updates for the current level*/
-	++curr_lvl;
-	plyr = ( curr_lvl%2 ?  plyr_1 : plyr_2 ); // ODD(curr_lvl) => expr evals to true => plyr_1 or EVEN(curr_lvl) => expr eval to false => plyr_2
-	oppo = ( curr_lvl%2 ?  plyr_2 : plyr_1 ); // 'oppo' should be the other guy, that's why the options are reversed
-	/*Updating pos_of */
-	{//need to change the position of plyr's piece in pos_of
-		for( iter1=0 ; iter1<8 ; ++iter1)
-		{
-			if( (pos_of[plyr][iter1].x==move.xold) && (pos_of[plyr][iter1].y==move.yold) )
-			{
-				pos_of[plyr][iter1].x = move.xnew;
-				pos_of[plyr][iter1].y = move.ynew;
-				break;
-			}
-		}
-		if( iter1==8 )
-		{
-			cerr << __func__ << ':' << __LINE__ << ": Wasn't able to find the current player 'plyr_" << (char)('1'+plyr) << "'s piece in pos_of at level " << curr_lvl << '.' << endl;
-			exit(11);
-		}
-	}
-	if( prev_cntxt.new_pos_pice==oppo )
-	{//need to invalidate the 'oppo' piece in pos_of
-		for( iter1=0 ; iter1<8 ; ++iter1 )
-		{
-			if( (pos_of[oppo][iter1].x==move.xnew) && (pos_of[oppo][iter1].y==move.ynew) )
-			{
-				pos_of[oppo][iter1].x = invld;
-				pos_of[oppo][iter1].y = invld;
-				break;
-			}
-		}
-		if( iter1==8 )
-		{
-			cerr << __func__ << ':' << __LINE__ << ": Wasn't able to find the opponent 'plyr_" << (char)('1'+oppo) << "'s piece in pos_of at level " << curr_lvl << '.' << endl;
-			exit(11);
-		}
-	}
-	board[move.xold][move.yold].player = none; // moved plyr out of this
-	board[move.xnew][move.ynew].player = plyr; // moved plyr into new position
-	hval = move.hval; // hval for this move already computed while selecting moves in the previous 'GAME'
+	save_prev_cntxt_and_update(move);
 
 	//Now it starts
 	find_moves();
@@ -202,7 +159,7 @@ GAME::GAME( MOVE move, HVAL* ret_best_hval )
 		goto wrap_up_1;
 	}
 	sort_moves();
-	
+
 	if( plyr==plyr_1 )
 	{
 		GAME(MOVE(moves.back()),&ret_hval);
@@ -251,94 +208,15 @@ GAME::GAME( MOVE move, HVAL* ret_best_hval )
 	}
 	
 wrap_up_1:*(ret_best_hval) = hval;
-	
-	/* Restore previous state */
-	board[move.xnew][move.ynew].player = prev_cntxt.new_pos_pice;
-	board[move.xold][move.yold].player = prev_cntxt.old_pos_pice;//the player
-	if( prev_cntxt.new_pos_pice==oppo )
-	{//Need to validate the entry corresponding to board[move.xnew][move.ynew].player in pos_of
-		for( iter1=0 ; iter1<8 ; ++iter1)
-		{
-			if( (pos_of[oppo][iter1].x==invld) && (pos_of[oppo][iter1].y==invld) )
-			{
-				pos_of[oppo][iter1].x = move.xnew;
-				pos_of[oppo][iter1].y = move.ynew;
-				break;
-			}
-		}
-		if( iter1==8 )
-		{
-			cerr << __func__ << ':' << __LINE__ << ": Wasn't able to find the opponent's 'plyr_" << (char)('1'+plyr) << "'s piece in pos_of at level " << curr_lvl << '.' << endl;
-			exit(11);
-		}
-	}
-	{//need to revert the position of plyr's piece in pos_of
-		for( iter1=0 ; iter1<8 ; ++iter1)
-		{
-			if( (pos_of[plyr][iter1].x==move.xnew) && (pos_of[plyr][iter1].y==move.ynew) )
-			{
-				pos_of[plyr][iter1].x = move.xold;
-				pos_of[plyr][iter1].y = move.yold;
-				break;
-			}
-		}
-		if( iter1==8 )
-		{
-			cerr << __func__ << ':' << __LINE__ << ": Wasn't able to find the current player 'plyr_" << (char)('1'+plyr) << "'s piece in pos_of at level " << curr_lvl << '.' << endl;
-			exit(11);
-		}
-	}
-	--curr_lvl;
+
+	load_prev_cntxt(move);
 }
 
 GAME::GAME(MOVE move, HVAL parnt_hval, HVAL* ret_best_hval )
 {
-	register unsigned char iter1;
 	HVAL ret_hval;
-	//Save the old context, pieces in 'prev_cntxt', position already in 'move'
-	MOVE_PIECE_elem prev_cntxt( board[move.xold][move.yold].player,board[move.xnew][move.ynew].player );
 
-	/*updates for the current level*/
-	++curr_lvl;
-	plyr = ( curr_lvl%2 ?  plyr_1 : plyr_2 ); // ODD(curr_lvl) => expr evals to true => plyr_1 or EVEN(curr_lvl) => expr eval to false => plyr_2
-	oppo = ( curr_lvl%2 ?  plyr_2 : plyr_1 ); // 'oppo' should be the other guy, that's why the options are reversed
-	/*Updating pos_of */
-	{//need to change the position of plyr's piece in pos_of
-		for( iter1=0 ; iter1<8 ; ++iter1)
-		{
-			if( (pos_of[plyr][iter1].x==move.xold) && (pos_of[plyr][iter1].y==move.yold) )
-			{
-				pos_of[plyr][iter1].x = move.xnew;
-				pos_of[plyr][iter1].y = move.ynew;
-				break;
-			}
-		}
-		if( iter1==8 )
-		{
-			cerr << __func__ << ':' << __LINE__ << ": Wasn't able to find the current player 'plyr_" << (char)('1'+plyr) << "'s piece in pos_of at level " << curr_lvl << '.' << endl;
-			exit(11);
-		}
-	}
-	if( prev_cntxt.new_pos_pice==oppo )
-	{//need to invalidate the 'oppo' piece in pos_of
-		for( iter1=0 ; iter1<8 ; ++iter1 )
-		{
-			if( (pos_of[oppo][iter1].x==move.xnew) && (pos_of[oppo][iter1].y==move.ynew) )
-			{
-				pos_of[oppo][iter1].x = invld;
-				pos_of[oppo][iter1].y = invld;
-				break;
-			}
-		}
-		if( iter1==8 )
-		{
-			cerr << __func__ << ':' << __LINE__ << ": Wasn't able to find the opponent 'plyr_" << (char)('1'+oppo) << "'s piece in pos_of at level " << curr_lvl << '.' << endl;
-			exit(11);
-		}
-	}
-	board[move.xold][move.yold].player = none; // moved plyr out of this
-	board[move.xnew][move.ynew].player = plyr; // moved plyr into new position
-	hval = move.hval; // hval for this move already computed while selecting moves in the previous 'GAME'
+	save_prev_cntxt_and_update(move);
 
 	//Now it starts
 	find_moves();
@@ -382,15 +260,26 @@ GAME::GAME(MOVE move, HVAL parnt_hval, HVAL* ret_best_hval )
 	}
 
 wrap_up_2:*(ret_best_hval) = hval;
-	
-	/* Restore previous state */
-	board[move.xnew][move.ynew].player = prev_cntxt.new_pos_pice;
-	board[move.xold][move.yold].player = prev_cntxt.old_pos_pice;//the player
-	if( prev_cntxt.new_pos_pice==oppo )
-	{//Need to validate the entry corresponding to board[move.xnew][move.ynew].player in pos_of
+
+	load_prev_cntxt(move);
+}
+
+void GAME::save_prev_cntxt_and_update(MOVE move)
+{
+	register unsigned char iter1;
+	/*Save the old context, pieces in 'prev_cntxt', position already in 'move'*/
+	prev_cntxt.old_pos_pice = (board[move.xold][move.yold].player);
+	prev_cntxt.new_pos_pice = (board[move.xnew][move.ynew].player);
+
+	/*updates for the current level : need to move oppo's piece into position */
+	++curr_lvl;
+	plyr = ( curr_lvl%2 ?  plyr_1 : plyr_2 ); // ODD(curr_lvl) => expr evals to true => plyr_1 or EVEN(curr_lvl) => expr eval to false => plyr_2
+	oppo = ( curr_lvl%2 ?  plyr_2 : plyr_1 ); // 'oppo' should be the other guy, that's why the options are reversed
+	/*Updating pos_of */
+	{//need to change the position of oppo's piece in pos_of
 		for( iter1=0 ; iter1<8 ; ++iter1)
 		{
-			if( (pos_of[oppo][iter1].x==invld) && (pos_of[oppo][iter1].y==invld) )
+			if( (pos_of[oppo][iter1].x==move.xold) && (pos_of[oppo][iter1].y==move.yold) )
 			{
 				pos_of[oppo][iter1].x = move.xnew;
 				pos_of[oppo][iter1].y = move.ynew;
@@ -399,17 +288,18 @@ wrap_up_2:*(ret_best_hval) = hval;
 		}
 		if( iter1==8 )
 		{
-			cerr << __func__ << ':' << __LINE__ << ": Wasn't able to find the opponent's 'plyr_" << (char)('1'+plyr) << "'s piece in pos_of at level " << curr_lvl << '.' << endl;
+			cerr << __func__ << ':' << __LINE__ << ": Wasn't able to find the opponent 'plyr_" << (char)('1'+oppo) << "'s piece in pos_of at level " << curr_lvl << '.' << endl;
 			exit(11);
 		}
 	}
-	{//need to revert the position of plyr's piece in pos_of
-		for( iter1=0 ; iter1<8 ; ++iter1)
+	if( prev_cntxt.new_pos_pice==plyr )
+	{//need to invalidate my piece in pos_of, incase oppo takes my piece
+		for( iter1=0 ; iter1<8 ; ++iter1 )
 		{
 			if( (pos_of[plyr][iter1].x==move.xnew) && (pos_of[plyr][iter1].y==move.ynew) )
 			{
-				pos_of[plyr][iter1].x = move.xold;
-				pos_of[plyr][iter1].y = move.yold;
+				pos_of[plyr][iter1].x = invld;
+				pos_of[plyr][iter1].y = invld;
 				break;
 			}
 		}
@@ -419,7 +309,9 @@ wrap_up_2:*(ret_best_hval) = hval;
 			exit(11);
 		}
 	}
-	--curr_lvl;
+	board[move.xold][move.yold].player = none; // moved plyr out of this
+	board[move.xnew][move.ynew].player = plyr; // moved plyr into new position
+	hval = move.hval; // hval for this move already computed while selecting moves in the previous 'GAME'
 }
 void GAME::find_moves()
 {
@@ -504,4 +396,46 @@ void GAME::find_hval_of_moves()
 void GAME::sort_moves()
 {
 	moves.sort();
+}
+
+void GAME::load_prev_cntxt(MOVE move)
+{
+	register unsigned char iter1;
+	/* Restore previous state */
+	board[move.xnew][move.ynew].player = prev_cntxt.new_pos_pice;
+	board[move.xold][move.yold].player = prev_cntxt.old_pos_pice;//the player
+	if( prev_cntxt.new_pos_pice==plyr )
+	{//Need to validate my piece corresponding to board[move.xnew][move.ynew].player in pos_of
+		for( iter1=0 ; iter1<8 ; ++iter1)
+		{
+			if( (pos_of[plyr][iter1].x==invld) && (pos_of[plyr][iter1].y==invld) )
+			{
+				pos_of[plyr][iter1].x = move.xnew;
+				pos_of[plyr][iter1].y = move.ynew;
+				break;
+			}
+		}
+		if( iter1==8 )
+		{
+			cerr << __func__ << ':' << __LINE__ << ": Wasn't able to find the current player 'plyr_" << (char)('1'+plyr) << "'s piece in pos_of at level " << curr_lvl << '.' << endl;
+			exit(11);
+		}
+	}
+	{//need to revert the position of oppo's piece in pos_of
+		for( iter1=0 ; iter1<8 ; ++iter1)
+		{
+			if( (pos_of[oppo][iter1].x==move.xnew) && (pos_of[oppo][iter1].y==move.ynew) )
+			{
+				pos_of[oppo][iter1].x = move.xold;
+				pos_of[oppo][iter1].y = move.yold;
+				break;
+			}
+		}
+		if( iter1==8 )
+		{
+			cerr << __func__ << ':' << __LINE__ << ": Wasn't able to find the opponent 'plyr_" << (char)('1'+oppo) << "'s piece in pos_of at level " << curr_lvl << '.' << endl;
+			exit(11);
+		}
+	}
+	--curr_lvl;
 }

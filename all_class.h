@@ -46,9 +46,16 @@ struct POS_elem
 
 struct MOVE_PIECE_elem
 {
-	unsigned char old_pos_pice : 4;
-	unsigned char new_pos_pice : 4;
+	unsigned char old_pos_pice : 2; // pice is faster type than piece ;)
+	unsigned char new_pos_pice : 2;
+	MOVE_PIECE_elem()
+	{
+		old_pos_pice = none;
+		new_pos_pice = none;
+	}
 	MOVE_PIECE_elem(unsigned char old_p,unsigned char new_p)
+	/* references since prev_cntxt( board[move.xold][move.yold].player,board[move.xnew][move.ynew].player )
+	 * is ‘(MOVE_PIECE_elem) (unsigned char:2&, unsigned char:2&)’ */
 	{
 		old_pos_pice = old_p;
 		new_pos_pice = new_p;
@@ -71,6 +78,7 @@ class GAME
 	HVAL hval;
 	unsigned char plyr, oppo;
 
+	MOVE_PIECE_elem prev_cntxt;
 public:
 
 	GAME(POS_elem pos[2][8], int max_turns, MOVE* ret_best_move); /*Game starts here*/ 
@@ -78,7 +86,9 @@ public:
 	GAME(MOVE move, HVAL parnt_hval, HVAL* ret_hval );		/*Spawn a new game where the configuration differs by 'move',
 											  knowing that the parent has minimax value of 'parent_hval'*/
 
+	void save_prev_cntxt_and_update(MOVE move);
 	void find_moves();
 	void find_hval_of_moves();
 	void sort_moves();
+	void load_prev_cntxt(MOVE move);
 };
