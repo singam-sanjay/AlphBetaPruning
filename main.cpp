@@ -6,12 +6,14 @@ MOVE move;
 unsigned char plyr = plyr_2, oppo = plyr_1;
 
 void init_board();
+void custom_init_board();
 void get_user_ip();
 bool move_on_board();
 
 int main()
 {
-	init_board();
+	custom_init_board();
+	//init_board();
 
 	cout << "maximum #turns lookahed (max " << MAX_LVL/2 << ") :" ;cin >> max_turns;
 
@@ -48,6 +50,32 @@ void init_board()
 	}
 }
 
+void custom_init_board()
+{
+	//pos[plyr_1][0].x = 0;pos[plyr_1][0].y = 6;
+	pos[plyr_1][0].x = 1;pos[plyr_1][0].y = 5;
+	//pos[plyr_1][1].x = invld;pos[plyr_1][1].y = invld;
+	pos[plyr_1][1].x = 2;pos[plyr_1][1].y = 5;
+	pos[plyr_1][2].x = invld;pos[plyr_1][2].y = invld;
+	pos[plyr_1][3].x = invld;pos[plyr_1][3].y = invld;
+	pos[plyr_1][4].x = invld;pos[plyr_1][4].y = invld;
+	pos[plyr_1][5].x = invld;pos[plyr_1][5].y = invld;
+	pos[plyr_1][6].x = invld;pos[plyr_1][6].y = invld;
+	pos[plyr_1][7].x = invld;pos[plyr_1][7].y = invld;
+
+	//pos[plyr_2][0].x = 0;pos[plyr_2][0].y = 1;
+	pos[plyr_2][0].x = 0;pos[plyr_2][0].y = 1;
+	//pos[plyr_2][1].x = 1;pos[plyr_2][1].y = 7;
+	//pos[plyr_2][1].x = 0;pos[plyr_2][1].y = 7;
+	pos[plyr_2][1].x = 1;pos[plyr_2][1].y = 6;
+	pos[plyr_2][2].x = invld;pos[plyr_2][2].y = invld;
+	pos[plyr_2][3].x = invld;pos[plyr_2][3].y = invld;
+	pos[plyr_2][4].x = invld;pos[plyr_2][4].y = invld;
+	pos[plyr_2][5].x = invld;pos[plyr_2][5].y = invld;
+	pos[plyr_2][6].x = invld;pos[plyr_2][6].y = invld;
+	pos[plyr_2][7].x = invld;pos[plyr_2][7].y = invld;
+
+}
 void get_user_ip()
 {
 	unsigned int xold,xnew,yold,ynew;
