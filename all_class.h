@@ -23,6 +23,10 @@ public:
 	bool operator<(HVAL hval);
 	void update( unsigned char xold,unsigned char yold,unsigned char xnew,unsigned char ynew );
 	char unsigned won();
+	void print()
+	{
+		cout << "hval:" << val << endl;
+	}
 };
 
 struct MOVE

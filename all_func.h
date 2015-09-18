@@ -73,7 +73,7 @@ bool MOVE::operator<(MOVE other_move)
 }
 
 GAME::GAME(POS_elem pos[2][8], int max_turns, MOVE* ret_best_move) : hval(0)
-{
+{	cout << "GAME1\n";
 	memcpy( pos_of, pos, sizeof(POS_elem)*2*8 );
 	max_lvl = 2*max_turns;
 	if( max_lvl>MAX_LVL )
@@ -118,6 +118,7 @@ GAME::GAME(POS_elem pos[2][8], int max_turns, MOVE* ret_best_move) : hval(0)
 	GAME(best_move,&ret_hval);
 	hval = ret_hval;
 	moves.pop_back();
+	ret_hval.print();
 
 	if( hval.won()==plyr_1 )
 	{
@@ -128,6 +129,7 @@ GAME::GAME(POS_elem pos[2][8], int max_turns, MOVE* ret_best_move) : hval(0)
 	while( moves.size()!=0 )
 	{
 		GAME(MOVE(moves.back()),hval,&ret_hval);
+		ret_hval.print();
 		if( hval<ret_hval ) // Since the first player (playr_1) is MAX
 		{
 			hval = ret_hval;
@@ -145,7 +147,7 @@ GAME::GAME(POS_elem pos[2][8], int max_turns, MOVE* ret_best_move) : hval(0)
 }
 
 GAME::GAME( MOVE move, HVAL* ret_best_hval )
-{
+{	cout << "GAME2\n";
 	HVAL ret_hval;
 
 	save_prev_cntxt_and_update(move);
@@ -162,7 +164,14 @@ GAME::GAME( MOVE move, HVAL* ret_best_hval )
 
 	if( plyr==plyr_1 )
 	{
+		if( MOVE(moves.back()).hval.won()==plyr )
+		{
+			MOVE(moves.back()).hval.print();
+			hval = MOVE(moves.back()).hval;
+			goto wrap_up_1;
+		}
 		GAME(MOVE(moves.back()),&ret_hval);
+		ret_hval.print();
 		hval = ret_hval;
 		moves.pop_back();
 		if( hval.won()==plyr_1 )
@@ -172,6 +181,7 @@ GAME::GAME( MOVE move, HVAL* ret_best_hval )
 		while( moves.size()!=0 )
 		{
 			GAME(MOVE(moves.back()),hval,&ret_hval);
+			ret_hval.print();
 			if( hval<ret_hval )
 			{
 				hval = ret_hval;
@@ -185,7 +195,14 @@ GAME::GAME( MOVE move, HVAL* ret_best_hval )
 	}
 	else//plyr is plyr_2
 	{
+		if( MOVE(moves.front()).hval.won()==plyr )
+		{
+			MOVE(moves.front()).hval.print();
+			hval = MOVE(moves.front()).hval;
+			goto wrap_up_1;
+		}
 		GAME(MOVE(moves.front()),&ret_hval);
+		ret_hval.print();
 		hval = ret_hval;
 		moves.pop_front();
 		if( hval.won()==plyr_2 )
@@ -195,6 +212,7 @@ GAME::GAME( MOVE move, HVAL* ret_best_hval )
 		while( moves.size()!=0 )
 		{
 			GAME(MOVE(moves.front()),hval,&ret_hval);
+			ret_hval.print();
 			if( ret_hval<hval )
 			{
 				hval = ret_hval;
@@ -213,7 +231,7 @@ wrap_up_1:*(ret_best_hval) = hval;
 }
 
 GAME::GAME(MOVE move, HVAL parnt_hval, HVAL* ret_best_hval )
-{
+{	cout << "GAME3\n";
 	HVAL ret_hval;
 
 	save_prev_cntxt_and_update(move);
@@ -230,6 +248,11 @@ GAME::GAME(MOVE move, HVAL parnt_hval, HVAL* ret_best_hval )
 
 	if( plyr==plyr_1 )/* MAX plyr_1 => my parent's plyr_2, MIN */
 	{
+		if( MOVE(moves.back()).hval.won()==plyr )
+		{
+			hval = MOVE(moves.back()).hval;
+			goto wrap_up_2;
+		}
 		GAME(MOVE(moves.back()),&ret_hval);
 		hval = ret_hval;
 		moves.pop_back();
@@ -245,6 +268,11 @@ GAME::GAME(MOVE move, HVAL parnt_hval, HVAL* ret_best_hval )
 	}
 	else/*plyr is MIN plyr_2 => my parent's plyr_1, MAX */
 	{
+		if( MOVE(moves.front()).hval.won()==plyr )
+		{
+			hval = MOVE(moves.front()).hval;
+			goto wrap_up_2;
+		}
 		GAME(MOVE(moves.front()),&ret_hval);
 		hval = ret_hval;
 		moves.pop_front();
@@ -266,6 +294,7 @@ wrap_up_2:*(ret_best_hval) = hval;
 
 void GAME::save_prev_cntxt_and_update(MOVE move)
 {
+	cout << "load [" << (int)move.xold << ',' << (int)move.yold << "]->[" << (int)move.xnew << ',' << (int)move.ynew << "]\n";
 	register unsigned char iter1;
 	/*Save the old context, pieces in 'prev_cntxt', position already in 'move'*/
 	prev_cntxt.old_pos_pice = (board[move.xold][move.yold].player);
@@ -277,8 +306,10 @@ void GAME::save_prev_cntxt_and_update(MOVE move)
 	oppo = ( curr_lvl%2 ?  plyr_2 : plyr_1 ); // 'oppo' should be the other guy, that's why the options are reversed
 	/*Updating pos_of */
 	{//need to change the position of oppo's piece in pos_of
+		//cout << "plyr_" << (int)(plyr+1) << " @LVL" << curr_lvl << '\n';
 		for( iter1=0 ; iter1<8 ; ++iter1)
 		{
+			//cout<<(int)iter1<<" "<<(int)move.xold<<" "<<(int)pos_of[oppo][iter1].x<<" "<<(int)move.yold<<" "<<(int)pos_of[oppo][iter1].y<<" "<<"New points"<<(int)move.xnew<<" "<<(int)move.ynew<<endl;
 			if( (pos_of[oppo][iter1].x==move.xold) && (pos_of[oppo][iter1].y==move.yold) )
 			{
 				pos_of[oppo][iter1].x = move.xnew;
@@ -400,6 +431,7 @@ void GAME::sort_moves()
 
 void GAME::load_prev_cntxt(MOVE move)
 {
+	cout << "restore [" << (int)move.xold << ',' << (int)move.yold << "]<-[" << (int)move.xnew << ',' << (int)move.ynew << "]\n";
 	register unsigned char iter1;
 	/* Restore previous state */
 	board[move.xnew][move.ynew].player = prev_cntxt.new_pos_pice;

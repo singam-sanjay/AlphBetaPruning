@@ -53,23 +53,26 @@ void init_board()
 void custom_init_board()
 {
 	//pos[plyr_1][0].x = 0;pos[plyr_1][0].y = 6;
-	pos[plyr_1][0].x = 1;pos[plyr_1][0].y = 5;
+	//pos[plyr_1][0].x = 1;pos[plyr_1][0].y = 5;
+	pos[plyr_1][0].x = invld;pos[plyr_1][0].y = invld;
 	//pos[plyr_1][1].x = invld;pos[plyr_1][1].y = invld;
-	pos[plyr_1][1].x = 2;pos[plyr_1][1].y = 5;
+	//pos[plyr_1][1].x = 2;pos[plyr_1][1].y = 5;
+	pos[plyr_1][1].x = invld;pos[plyr_1][1].y = invld;
 	pos[plyr_1][2].x = invld;pos[plyr_1][2].y = invld;
 	pos[plyr_1][3].x = invld;pos[plyr_1][3].y = invld;
 	pos[plyr_1][4].x = invld;pos[plyr_1][4].y = invld;
-	pos[plyr_1][5].x = invld;pos[plyr_1][5].y = invld;
-	pos[plyr_1][6].x = invld;pos[plyr_1][6].y = invld;
+	pos[plyr_1][5].x = 5;pos[plyr_1][5].y = 1;
+	pos[plyr_1][6].x = 6;pos[plyr_1][6].y = 5;
 	pos[plyr_1][7].x = invld;pos[plyr_1][7].y = invld;
 
 	//pos[plyr_2][0].x = 0;pos[plyr_2][0].y = 1;
-	pos[plyr_2][0].x = 0;pos[plyr_2][0].y = 1;
+	pos[plyr_2][0].x = invld ;pos[plyr_2][0].y = invld;
 	//pos[plyr_2][1].x = 1;pos[plyr_2][1].y = 7;
 	//pos[plyr_2][1].x = 0;pos[plyr_2][1].y = 7;
-	pos[plyr_2][1].x = 1;pos[plyr_2][1].y = 6;
+	//pos[plyr_2][1].x = 1;pos[plyr_2][1].y = 6;
+	pos[plyr_2][1].x = invld;pos[plyr_2][1].y = invld;
 	pos[plyr_2][2].x = invld;pos[plyr_2][2].y = invld;
-	pos[plyr_2][3].x = invld;pos[plyr_2][3].y = invld;
+	pos[plyr_2][3].x = 3;pos[plyr_2][3].y = 5;
 	pos[plyr_2][4].x = invld;pos[plyr_2][4].y = invld;
 	pos[plyr_2][5].x = invld;pos[plyr_2][5].y = invld;
 	pos[plyr_2][6].x = invld;pos[plyr_2][6].y = invld;
@@ -78,7 +81,7 @@ void custom_init_board()
 }
 void get_user_ip()
 {
-	unsigned int xold,xnew,yold,ynew;
+	int xold,xnew,yold,ynew;
 	unsigned char iter1;
 	do
 	{
@@ -88,7 +91,7 @@ void get_user_ip()
 		cout << "ynew:";cin >> ynew;if( ynew<0 || 7<ynew || ynew!=(yold-1) )goto invalid_coord;
 		for( iter1=0 ; iter1<8 ; ++iter1 )
 		{
-			if( pos[oppo][iter1].x==move.xold && pos[oppo][iter1].y==move.yold )break;
+			if( pos[plyr_2][iter1].x==move.xold && pos[plyr_2][iter1].y==move.yold )break;
 		}
 		if( iter1==8 )
 		{
@@ -97,7 +100,7 @@ void get_user_ip()
 		}
 		for( iter1=0 ; iter1<8 ; ++iter1)
 		{
-			if( pos[oppo][iter1].x==move.xnew && pos[oppo][iter1].y==move.ynew )break;
+			if( pos[plyr_2][iter1].x==move.xnew && pos[plyr_2][iter1].y==move.ynew )break;
 		}
 		if( iter1!=8 )
 		{
