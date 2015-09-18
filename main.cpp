@@ -54,10 +54,10 @@ void get_user_ip()
 	unsigned char iter1;
 	do
 	{
-		cout << "xold:";cin >> xold;if( !(xold<0 && 7<xold) )goto invalid_coord;
-		cout << "yold:";cin >> yold;if( !(yold<0 && 7<yold) )goto invalid_coord;
-		cout << "xnew:";cin >> xnew;if( !(xnew<0 && 7<xnew && xnew<=xold) )goto invalid_coord;
-		cout << "ynew:";cin >> ynew;if( !(ynew<0 && 7<ynew && ynew<yold) )goto invalid_coord;
+		cout << "xold:";cin >> xold;if( xold<0 || 7<xold )goto invalid_coord;
+		cout << "yold:";cin >> yold;if( yold<0 || 7<yold )goto invalid_coord;
+		cout << "xnew:";cin >> xnew;if( xnew<0 || 7<xnew || xnew<(xold-1) || (xold+1)<xnew )goto invalid_coord;
+		cout << "ynew:";cin >> ynew;if( ynew<0 || 7<ynew || ynew!=(yold-1) )goto invalid_coord;
 		for( iter1=0 ; iter1<8 ; ++iter1 )
 		{
 			if( pos[oppo][iter1].x==move.xold && pos[oppo][iter1].y==move.yold )break;
@@ -87,7 +87,7 @@ invalid_coord:cout << "Invalid coordinates\n";
 }
 bool move_on_board()
 {
-	cout << '[' << move.xold << ',' << move.yold << "]->[" << move.xnew << ',' << move.ynew << "]\n";
+	cout << '[' << (int)move.xold << ',' << (int)move.yold << "]->[" << (int)move.xnew << ',' << (int)move.ynew << "]\n";
 	if( move.ynew==7 || move.ynew==0 )
 	{
 		return true;// Someone just won

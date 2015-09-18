@@ -310,7 +310,7 @@ void GAME::save_prev_cntxt_and_update(MOVE move)
 		}
 	}
 	board[move.xold][move.yold].player = none; // moved plyr out of this
-	board[move.xnew][move.ynew].player = plyr; // moved plyr into new position
+	board[move.xnew][move.ynew].player = oppo; // moved oppo into new position
 	hval = move.hval; // hval for this move already computed while selecting moves in the previous 'GAME'
 }
 void GAME::find_moves()
