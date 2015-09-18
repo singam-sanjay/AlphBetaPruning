@@ -73,7 +73,7 @@ bool MOVE::operator<(MOVE other_move)
 }
 
 GAME::GAME(POS_elem pos[2][8], int max_turns, MOVE* ret_best_move) : hval(0)
-{	cout << "GAME1\n";
+{	//cout << "GAME1\n";
 	memcpy( pos_of, pos, sizeof(POS_elem)*2*8 );
 	max_lvl = 2*max_turns;
 	if( max_lvl>MAX_LVL )
@@ -118,7 +118,7 @@ GAME::GAME(POS_elem pos[2][8], int max_turns, MOVE* ret_best_move) : hval(0)
 	GAME(best_move,&ret_hval);
 	hval = ret_hval;
 	moves.pop_back();
-	ret_hval.print();
+	//ret_hval.print();
 
 	if( hval.won()==plyr_1 )
 	{
@@ -129,7 +129,7 @@ GAME::GAME(POS_elem pos[2][8], int max_turns, MOVE* ret_best_move) : hval(0)
 	while( moves.size()!=0 )
 	{
 		GAME(MOVE(moves.back()),hval,&ret_hval);
-		ret_hval.print();
+		//ret_hval.print();
 		if( hval<ret_hval ) // Since the first player (playr_1) is MAX
 		{
 			hval = ret_hval;
@@ -147,7 +147,7 @@ GAME::GAME(POS_elem pos[2][8], int max_turns, MOVE* ret_best_move) : hval(0)
 }
 
 GAME::GAME( MOVE move, HVAL* ret_best_hval )
-{	cout << "GAME2\n";
+{	//cout << "GAME2\n";
 	HVAL ret_hval;
 
 	save_prev_cntxt_and_update(move);
@@ -166,12 +166,12 @@ GAME::GAME( MOVE move, HVAL* ret_best_hval )
 	{
 		if( MOVE(moves.back()).hval.won()==plyr )
 		{
-			MOVE(moves.back()).hval.print();
+			//MOVE(moves.back()).hval.print();
 			hval = MOVE(moves.back()).hval;
 			goto wrap_up_1;
 		}
 		GAME(MOVE(moves.back()),&ret_hval);
-		ret_hval.print();
+		//ret_hval.print();
 		hval = ret_hval;
 		moves.pop_back();
 		if( hval.won()==plyr_1 )
@@ -181,7 +181,7 @@ GAME::GAME( MOVE move, HVAL* ret_best_hval )
 		while( moves.size()!=0 )
 		{
 			GAME(MOVE(moves.back()),hval,&ret_hval);
-			ret_hval.print();
+			//ret_hval.print();
 			if( hval<ret_hval )
 			{
 				hval = ret_hval;
@@ -197,12 +197,12 @@ GAME::GAME( MOVE move, HVAL* ret_best_hval )
 	{
 		if( MOVE(moves.front()).hval.won()==plyr )
 		{
-			MOVE(moves.front()).hval.print();
+			//MOVE(moves.front()).hval.print();
 			hval = MOVE(moves.front()).hval;
 			goto wrap_up_1;
 		}
 		GAME(MOVE(moves.front()),&ret_hval);
-		ret_hval.print();
+		//ret_hval.print();
 		hval = ret_hval;
 		moves.pop_front();
 		if( hval.won()==plyr_2 )
@@ -212,7 +212,7 @@ GAME::GAME( MOVE move, HVAL* ret_best_hval )
 		while( moves.size()!=0 )
 		{
 			GAME(MOVE(moves.front()),hval,&ret_hval);
-			ret_hval.print();
+			//ret_hval.print();
 			if( ret_hval<hval )
 			{
 				hval = ret_hval;
@@ -231,7 +231,7 @@ wrap_up_1:*(ret_best_hval) = hval;
 }
 
 GAME::GAME(MOVE move, HVAL parnt_hval, HVAL* ret_best_hval )
-{	cout << "GAME3\n";
+{	//cout << "GAME3\n";
 	HVAL ret_hval;
 
 	save_prev_cntxt_and_update(move);
@@ -294,7 +294,7 @@ wrap_up_2:*(ret_best_hval) = hval;
 
 void GAME::save_prev_cntxt_and_update(MOVE move)
 {
-	cout << "load [" << (int)move.xold << ',' << (int)move.yold << "]->[" << (int)move.xnew << ',' << (int)move.ynew << "]\n";
+	//cout << "load [" << (int)move.xold << ',' << (int)move.yold << "]->[" << (int)move.xnew << ',' << (int)move.ynew << "]\n";
 	register unsigned char iter1;
 	/*Save the old context, pieces in 'prev_cntxt', position already in 'move'*/
 	prev_cntxt.old_pos_pice = (board[move.xold][move.yold].player);
@@ -431,7 +431,7 @@ void GAME::sort_moves()
 
 void GAME::load_prev_cntxt(MOVE move)
 {
-	cout << "restore [" << (int)move.xold << ',' << (int)move.yold << "]<-[" << (int)move.xnew << ',' << (int)move.ynew << "]\n";
+	//cout << "restore [" << (int)move.xold << ',' << (int)move.yold << "]<-[" << (int)move.xnew << ',' << (int)move.ynew << "]\n";
 	register unsigned char iter1;
 	/* Restore previous state */
 	board[move.xnew][move.ynew].player = prev_cntxt.new_pos_pice;

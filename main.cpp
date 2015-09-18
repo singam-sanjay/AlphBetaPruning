@@ -12,8 +12,8 @@ bool move_on_board();
 
 int main()
 {
-	custom_init_board();
-	//init_board();
+	//custom_init_board();
+	init_board();
 
 	cout << "maximum #turns lookahed (max " << MAX_LVL/2 << ") :" ;cin >> max_turns;
 
@@ -82,6 +82,7 @@ void custom_init_board()
 void get_user_ip()
 {
 	int xold,xnew,yold,ynew;
+	cout << "Your move\n";
 	unsigned char iter1;
 	do
 	{
