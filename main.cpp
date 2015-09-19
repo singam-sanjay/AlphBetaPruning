@@ -108,6 +108,16 @@ void get_user_ip()
 			cout << "New coord has your piece\n";
 			continue;
 		}
+		if( move.xnew==move.xold )//It's moving forward
+		for( iter1=0 ; iter1<8 ; ++iter1 )
+		{//Need to check if computer's piece is in front
+			if( pos[plyr_1[iter1].x==move.xnew && pos[plyr_1][iter1].y==move.ynew )break;
+		}
+		if( iter1!=8 )
+		{
+			cout << "My piece is in front of the piece you're moving.";
+			continue;
+		}
 		break;
 invalid_coord:cout << "Invalid coordinates\n";
 		continue;
