@@ -111,7 +111,7 @@ void get_user_ip()
 		if( move.xnew==move.xold )//It's moving forward
 		for( iter1=0 ; iter1<8 ; ++iter1 )
 		{//Need to check if computer's piece is in front
-			if( pos[plyr_1[iter1].x==move.xnew && pos[plyr_1][iter1].y==move.ynew )break;
+			if( pos[plyr_1][iter1].x==move.xnew && pos[plyr_1][iter1].y==move.ynew )break;
 		}
 		if( iter1!=8 )
 		{
