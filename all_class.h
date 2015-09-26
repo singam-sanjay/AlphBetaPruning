@@ -75,6 +75,7 @@ BOARD_elem board[8][8];
 POS_elem	  pos_of[2][8];
 int const MAX_LVL = 10;
 int max_lvl, curr_lvl;
+unsigned int count_moves;
 
 class GAME
 {

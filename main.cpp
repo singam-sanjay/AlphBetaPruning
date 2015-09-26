@@ -22,7 +22,9 @@ int main()
 		swap(plyr,oppo);
 		if( plyr==plyr_1 )
 		{
+			count_moves = 0;
 			GAME(pos,max_turns,&move);
+			cout << count_moves << " cumulative moves made to lookahead.\n";
 		}
 		else
 		{

@@ -11,5 +11,5 @@ all: pawn-chess pawn-chess-pruned
 run: pawn-chess
 	./pawn-chess
 
-run-pruned: paen-chess-pruned
+run-pruned: pawn-chess-pruned
 	./pawn-chess-pruned

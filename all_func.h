@@ -116,6 +116,7 @@ GAME::GAME(POS_elem pos[2][8], int max_turns, MOVE* ret_best_move) : hval(0)
 		return;
 	}
 	GAME(best_move,&ret_hval);
+	++count_moves;
 	hval = ret_hval;
 	moves.pop_back();
 	//ret_hval.print();
@@ -129,6 +130,7 @@ GAME::GAME(POS_elem pos[2][8], int max_turns, MOVE* ret_best_move) : hval(0)
 	while( moves.size()!=0 )
 	{
 		GAME(MOVE(moves.back()),hval,&ret_hval);
+		++count_moves;
 		//ret_hval.print();
 		if( hval<ret_hval ) // Since the first player (playr_1) is MAX
 		{
@@ -164,6 +166,7 @@ GAME::GAME( MOVE move, HVAL* ret_best_hval )
 
 	if( plyr==plyr_1 )
 	{
+		++count_moves;
 		if( MOVE(moves.back()).hval.won()==plyr )
 		{
 			//MOVE(moves.back()).hval.print();
@@ -171,6 +174,7 @@ GAME::GAME( MOVE move, HVAL* ret_best_hval )
 			goto wrap_up_1;
 		}
 		GAME(MOVE(moves.back()),&ret_hval);
+		++count_moves;
 		//ret_hval.print();
 		hval = ret_hval;
 		moves.pop_back();
@@ -187,6 +191,7 @@ GAME::GAME( MOVE move, HVAL* ret_best_hval )
 			#pragma message "Compiling without Alpha-Beta Pruning"
 			GAME(MOVE(moves.back()),&ret_hval);
 			#endif
+			++count_moves;
 			//ret_hval.print();
 			if( hval<ret_hval )
 			{
@@ -201,6 +206,7 @@ GAME::GAME( MOVE move, HVAL* ret_best_hval )
 	}
 	else//plyr is plyr_2
 	{
+		++count_moves;
 		if( MOVE(moves.front()).hval.won()==plyr )
 		{
 			//MOVE(moves.front()).hval.print();
@@ -208,6 +214,7 @@ GAME::GAME( MOVE move, HVAL* ret_best_hval )
 			goto wrap_up_1;
 		}
 		GAME(MOVE(moves.front()),&ret_hval);
+		++count_moves;
 		//ret_hval.print();
 		hval = ret_hval;
 		moves.pop_front();
@@ -224,6 +231,7 @@ GAME::GAME( MOVE move, HVAL* ret_best_hval )
 			#pragma message "Compiling without Alpha-Beta Pruning"
 			GAME(MOVE(moves.front()),&ret_hval);
 			#endif
+			++count_moves;
 			//ret_hval.print();
 			if( ret_hval<hval )
 			{
@@ -260,17 +268,20 @@ GAME::GAME(MOVE move, HVAL parnt_hval, HVAL* ret_best_hval )
 
 	if( plyr==plyr_1 )/* MAX plyr_1 => my parent's plyr_2, MIN */
 	{
+		++count_moves;
 		if( MOVE(moves.back()).hval.won()==plyr )
 		{
 			hval = MOVE(moves.back()).hval;
 			goto wrap_up_2;
 		}
 		GAME(MOVE(moves.back()),&ret_hval);
+		++count_moves;
 		hval = ret_hval;
 		moves.pop_back();
 		while( hval<parnt_hval && moves.size()!=0 )
 		{
 			GAME(MOVE(moves.back()),hval,&ret_hval);
+			++count_moves;
 			if( hval<ret_hval )
 			{
 				hval = ret_hval;
@@ -280,17 +291,20 @@ GAME::GAME(MOVE move, HVAL parnt_hval, HVAL* ret_best_hval )
 	}
 	else/*plyr is MIN plyr_2 => my parent's plyr_1, MAX */
 	{
+		++count_moves;
 		if( MOVE(moves.front()).hval.won()==plyr )
 		{
 			hval = MOVE(moves.front()).hval;
 			goto wrap_up_2;
 		}
 		GAME(MOVE(moves.front()),&ret_hval);
+		++count_moves;
 		hval = ret_hval;
 		moves.pop_front();
 		while( parnt_hval<hval && moves.size()!=0 )
 		{
 			GAME(MOVE(moves.front()),hval,&ret_hval);
+			++count_moves;
 			if( ret_hval<hval )
 			{
 				hval = ret_hval;
