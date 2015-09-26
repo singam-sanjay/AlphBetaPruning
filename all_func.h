@@ -184,7 +184,7 @@ GAME::GAME( MOVE move, HVAL* ret_best_hval )
 			#pragma message "Compiling with Alpha-Beta Pruning"
 			GAME(MOVE(moves.back()),hval,&ret_hval);
 			#else
-			#pragma message "Compiling without Alpha-Beta Pruning\n"
+			#pragma message "Compiling without Alpha-Beta Pruning"
 			GAME(MOVE(moves.back()),&ret_hval);
 			#endif
 			//ret_hval.print();
