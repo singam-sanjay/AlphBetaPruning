@@ -180,7 +180,13 @@ GAME::GAME( MOVE move, HVAL* ret_best_hval )
 		}
 		while( moves.size()!=0 )
 		{
+			#ifdef ALPH_BETA
+			#pragma message "Compiling with Alpha-Beta Pruning"
 			GAME(MOVE(moves.back()),hval,&ret_hval);
+			#else
+			#pragma message "Compiling without Alpha-Beta Pruning\n"
+			GAME(MOVE(moves.back()),&ret_hval);
+			#endif
 			//ret_hval.print();
 			if( hval<ret_hval )
 			{
@@ -211,7 +217,13 @@ GAME::GAME( MOVE move, HVAL* ret_best_hval )
 		}
 		while( moves.size()!=0 )
 		{
+			#ifdef ALPH_BETA
+			#pragma message "Compiling with Alpha-Beta Pruning"
 			GAME(MOVE(moves.front()),hval,&ret_hval);
+			#else
+			#pragma message "Compiling without Alpha-Beta Pruning"
+			GAME(MOVE(moves.front()),&ret_hval);
+			#endif
 			//ret_hval.print();
 			if( ret_hval<hval )
 			{
