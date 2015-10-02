@@ -1,5 +1,5 @@
 An implementation of alpha-beta pruning on a chess-like game.
 
-To Compile : g++ main.cpp -O3 main.cpp -o ./pawn-chess or 'make pawn-chess'
+To Compile : 'make pawn-chess' or 'make pawn-chess-pruned'
 
-Usage : ./pawn-chess or 'make run'
+Usage : 'make run' or 'make run-pruned'
